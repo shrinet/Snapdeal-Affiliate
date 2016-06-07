@@ -30,7 +30,6 @@ class Wp_Snapdeal_Affiliate{
 		register_setting( 'wpsa-settings-group', 'affiliate_id' );
 		register_setting( 'wpsa-settings-group', 'affiliate_token' );
 	}
-
-
+	
 }
 new Wp_Snapdeal_Affiliate();
