@@ -1,16 +1,16 @@
 <?php
-
 /**
  * Provide a admin area view for the plugin
  *
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @link       http://fsylum.net
+ * @link       http://www.mvoisionsolutions.com
  * @since      1.0.0
  *
- * @package    Outdated_Notice
- * @subpackage Outdated_Notice/admin/partials
+ * @package    Snapdeal_Affiliate
+ * @subpackage Snapdeal_Affiliate/admin/partials
  */
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -32,5 +32,3 @@
 <?php
 var_dump(get_option( $this->option_name . '_aft' ));
 var_dump(get_option( $this->option_name . '_afd' ));
-global $submenu;
-print_r($submenu[$this->plugin_name]);

@@ -30,7 +30,23 @@ class Snapdeal_Affiliate_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		global $wpdb;
 
+		$table_name = $wpdb->prefix . "snap_cats";
+
+		$sql = '
+		  CREATE TABLE ' . $table_name . ' (
+		    id int(11) NOT NULL auto_increment,
+		    name varchar(255) NOT NULL,
+		    slug varchar(255) NOT NULL,
+		    url varchar(255) default NULL,
+		    description text,
+		    dateImport datetime DEFAULT \'0000-00-00 00:00:00\' NOT NULL,
+		    relative varchar(255) default NULL,
+		    PRIMARY KEY  (id)
+		  )';
+		dbDelta( $sql );
 	}
 
 }

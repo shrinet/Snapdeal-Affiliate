@@ -30,7 +30,13 @@ class Snapdeal_Affiliate_Deactivator {
 	 * @since    1.0.0
 	 */
 	public static function deactivate() {
+		global $wpdb;
+		$table = $wpdb->prefix."snap_cats";
 
+		//Delete any options thats stored also?
+		//delete_option('wp_yourplugin_version');
+
+		$wpdb->query("DROP TABLE IF EXISTS $table");
 	}
 
 }

@@ -47,7 +47,9 @@ class Snapdeal_Affiliate_Admin {
 	 * @access 	private
 	 * @var  	string 		$option_name 	Option name of this plugin
 	 */
-	private $option_name = 'snapdeal_affiliate';
+	private $option_name;
+
+	protected $import;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -56,10 +58,11 @@ class Snapdeal_Affiliate_Admin {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $option_name ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->option_name = $option_name;
 
 	}
 
@@ -127,16 +130,9 @@ class Snapdeal_Affiliate_Admin {
 			__( 'Snapdeal Affliate Cat', 'snapdeal-affiliate-cat' ),
 			'manage_options',
 			$this->plugin_name. '_cats',
-			array( $this, 'display_options_pag' ));
+			array( $this, 'display_cats_page' ));
 	}
 
-	/**
-	 *
-	 *
-	 */
-	public function snapdeal_affiliate_plugin_setup_submenu() {
-
-	}
 	/**
 	 * Render the options page for plugin
 	 *
@@ -144,6 +140,15 @@ class Snapdeal_Affiliate_Admin {
 	 */
 	public function display_options_page() {
 		include_once 'partials/snapdeal-affiliate-admin-display.php';
+	}
+
+	/**
+	 * Render the catss page for plugin
+	 *
+	 * @since 1.0.0
+	 */
+	public function display_cats_page() {
+		include_once 'partials/snapdeal-affiliate-cats-display.php';
 	}
 	/**
 	 * Register all related settings of this plugin
@@ -186,7 +191,7 @@ class Snapdeal_Affiliate_Admin {
 			$this->option_name . '_getCategory',
 			__( 'Get Category', 'snapdeal-affiliate'),
 			array( $this, $this->option_name . '_getcategory_cb'),
-			$this->plugin_name
+			$this->plugin_name. '_cats'
 		);
 
 		register_setting( $this->plugin_name, $this->option_name . '_position', array( $this, $this->option_name . '_sanitize_position' ) );
@@ -210,6 +215,9 @@ class Snapdeal_Affiliate_Admin {
 	 */
 	public function snapdeal_affiliate_getcategory_cb() {
 		echo '<p>' . __( 'Please change the settings accordingly.', 'snapdeal-affiliate' ) . '</p>';
+		$wp_list_table = new Snapdeal_Affiliate_List_Category();
+		$wp_list_table->prepare_items();
+		$wp_list_table->display();
 	}
 	/**
 	 * Render the radio input field for position option
@@ -264,7 +272,7 @@ class Snapdeal_Affiliate_Admin {
 	/**
 	 * Sanitize the text position value before being saved to database
 	 *
-	 * @param  string $position $_POST value
+	 * @param  string $position $_POST value.
 	 * @since  1.0.0
 	 * @return string           Sanitized value
 	 */
@@ -272,6 +280,17 @@ class Snapdeal_Affiliate_Admin {
 		if ( in_array( $position, array( 'before', 'after' ), true ) ) {
 			return $position;
 		}
+	}
+
+	public function snapdeal_ajax_request() {
+
+		require_once plugin_dir_path( dirname(__FILE__) ) . 'includes/class-snapdeal-affiliate-import.php';
+		$this->import = new Snapdeal_Affiliate_Import( $this->option_name );
+		$result = $this->import->getCategory();
+		$this->import->addCategories($result);
+		echo $result;
+
+		die();
 	}
 
 }

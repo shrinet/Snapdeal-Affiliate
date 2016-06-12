@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The file that defines the core plugin class
  *
@@ -58,6 +57,15 @@ class Snapdeal_Affiliate {
 	protected $version;
 
 	/**
+	 * The options name to be used in this plugin
+	 *
+	 * @since  	1.0.0
+	 * @access 	private
+	 * @var  	string 		$option_name 	Option name of this plugin
+	 */
+	protected $option_name;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -70,7 +78,7 @@ class Snapdeal_Affiliate {
 
 		$this->plugin_name = 'snapdeal-affiliate';
 		$this->version = '1.0.0';
-
+		$this->option_name = 'snapdeal_affiliate';
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
@@ -119,6 +127,10 @@ class Snapdeal_Affiliate {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-snapdeal-affiliate-public.php';
 
+		require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-snapdeal-affiliate-list-category.php';
+
 		$this->loader = new Snapdeal_Affiliate_Loader();
 
 	}
@@ -149,13 +161,15 @@ class Snapdeal_Affiliate {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Snapdeal_Affiliate_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Snapdeal_Affiliate_Admin( $this->get_plugin_name(), $this->get_version(), $this->get_option() );
 		$this->loader->add_action('admin_menu', $plugin_admin, 'snapdeal_affiliate_plugin_setup_menu');
-		$this->loader->add_action('admin_menu', $plugin_admin, 'snapdeal_affiliate_plugin_setup_submenu');
+		
 		$this->loader->add_action( 'admin_init', $plugin_admin, 'register_setting' );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
+		$this->loader->add_action('wp_ajax_snapdeal_response', $plugin_admin, 'snapdeal_ajax_request');
 
 	}
 
@@ -172,7 +186,6 @@ class Snapdeal_Affiliate {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 	}
 
 	/**
@@ -215,4 +228,7 @@ class Snapdeal_Affiliate {
 		return $this->version;
 	}
 
+	public function get_option() {
+		return $this->option_name;
+	}
 }

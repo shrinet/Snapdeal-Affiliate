@@ -28,5 +28,28 @@
 	 * Although scripts in the WordPress core, Plugins and Themes may be
 	 * practising this, we should strive to set a better example in our own work.
 	 */
+	$( document).ready( function () {
+		$('#cats-form').submit( function () {
+			var data = {
+				action: 'snapdeal_response'
+			};
+			$.post(ajaxurl, data, function ( response ) {
+				
+				var json_obj = $.parseJSON(response);//parse JSON
+				$.each( json_obj["apiGroups"]["Affiliate"]["listingsAvailable"], function( key, value ) {
+					console.log( key + ": " + value["listingVersions"]["v1"]["get"] );
+				});
+				/*var output="<ul>";
+				for (var i in json_obj)
+				{
+					output+="<li>" + json_obj + ",  " + json_obj[i].ID + "</li>";
+				}
+				output+="</ul>";
+
+				$('span').html(output);*/
+			})
+			return false;
+		})
+	})
 
 })( jQuery );
